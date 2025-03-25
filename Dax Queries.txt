@@ -1,0 +1,69 @@
+
+**To get the average waiting list**
+
+Average Waitiing List = AVERAGE('All Patients'[Total Waiting])
+
+**To get the total waiting for latest month**
+
+Total Waiting for Current month = 
+CALCULATE(
+    SUM(
+        'All Patients'[Total Waiting]
+    ), 
+    'All Patients'[Archive Date]= 
+    MAX(
+        'All Patients'[Archive Date]
+    )
+) + 0
+
+**to get the total waiting time for latest month previous year**
+
+PY Latest Month wait list = 
+CALCULATE(
+    SUM(
+        'All Patients'[Total Waiting]
+    ), 
+    'All Patients'[Archive Date]= 
+    EDATE(
+        MAX(
+            'All Patients'[Archive Date]
+        ), -12
+    )
+)+0
+
+**To get the average or Median wait list based on the user selection**
+
+Avg/Med Wait List = 
+    SWITCH(
+        VALUES(
+            'Calculation Method'[Cal Method]
+        ),
+        "Average", [Average Waitiing List],
+        "Median", [Median Waiting List]
+    )
+
+**To display message if there is no data to show based on the filters**
+
+NoDataLeft = 
+if(
+    ISBLANK(
+        CALCULATE(
+            SUM(
+                'All Patients'[Total Waiting]
+            ), 
+            'All Patients'[Case Type] <>"Outpatient"
+        )
+    ),
+    "No Data for selected criteria", ""
+
+
+**To change the title Dynamically**
+
+Dynamic Title = 
+SWITCH(
+    VALUES(
+        'Calculation Method'[Cal Method]
+    ), 
+    "Average","Key Indicators - Patient Wait List (Average)",
+    "Median","Key Indicators - Patient Wait List (Median)"
+)
